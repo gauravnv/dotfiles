@@ -2,6 +2,8 @@
 
 This is my dotfile setup for my Pop!_OS linux machine Zephyrus G14. It started in Dec 2025 and I'm sure it will evolve over time. If you happen to visit and see some room for improvement, please feel free to open a PR, issue, or just reach out. Would be happy to learn! :)
 
+![Fastfetch Sample](/docs/sample.png)
+
 ## What’s Included
 
 - **Shell**: Zsh + Oh My Zsh + Powerlevel10k
