@@ -34,7 +34,16 @@ Run the helper script:
 update-dotfiles
 ```
 
+Common modes:
+
+```bash
+update-dotfiles --check
+update-dotfiles -y --pull --apply --re-add --commit --push
+update-dotfiles --commit --pr
+```
+
 It:
+- Shows remote ahead/behind (and can fast-forward pull)
 - Shows `chezmoi diff` (machine vs repo)
 - Optionally runs `chezmoi re-add` (pull local changes into the repo)
 - Shows repo diffs (uses `delta` if installed)
