@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+confirm() {
+  local prompt="$1"
+  local reply
+
+  # In non-interactive contexts (no stdin/TTY), default to "no".
+  if ! read -r -p "$prompt [y/N] " reply; then
+    return 1
+  fi
+
+  [[ "$reply" == "y" || "$reply" == "Y" ]]
+}
+
+require() {
+  local cmd="$1"
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo "update-dotfiles: missing required command: $cmd" >&2
+    exit 1
+  fi
+}
+
+# Ensure cargo-installed tools (like `delta`) are discoverable.
+case ":$PATH:" in
+  *":$HOME/.cargo/bin:"*) ;;
+  *) export PATH="$HOME/.cargo/bin:$PATH" ;;
+esac
+
+require git
+require chezmoi
+
+DOTFILES_DIR="$(chezmoi source-path)"
+if [ -z "$DOTFILES_DIR" ]; then
+  DOTFILES_DIR="$HOME/gitty/dotfiles"
+fi
+
+if [ ! -d "$DOTFILES_DIR/.git" ]; then
+  echo "update-dotfiles: not a git repo: $DOTFILES_DIR" >&2
+  exit 1
+fi
+
+echo "== Dotfiles repo =="
+echo "$DOTFILES_DIR"
+
+echo ""
+echo "== Fetching remote =="
+git -C "$DOTFILES_DIR" fetch --prune || true
+
+upstream=""
+if upstream=$(git -C "$DOTFILES_DIR" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null); then
+  echo "Upstream: $upstream"
+fi
+
+echo ""
+echo "== Repo status =="
+git -C "$DOTFILES_DIR" status -sb
+
+# If behind upstream, offer fast-forward pull.
+if [ -n "$upstream" ]; then
+  behind_count=$(git -C "$DOTFILES_DIR" rev-list --count "HEAD..$upstream" 2>/dev/null || echo 0)
+  ahead_count=$(git -C "$DOTFILES_DIR" rev-list --count "$upstream..HEAD" 2>/dev/null || echo 0)
+
+  if [ "$behind_count" -gt 0 ] && [ "$ahead_count" -eq 0 ]; then
+    if confirm "Remote has $behind_count commit(s). Fast-forward pull?"; then
+      git -C "$DOTFILES_DIR" pull --ff-only
+      if confirm "Apply repo state to this machine (chezmoi apply)?"; then
+        chezmoi apply
+      fi
+    fi
+  fi
+fi
+
+echo ""
+echo "== Local machine vs repo (chezmoi diff) =="
+chezmoi diff || true
+
+if chezmoi diff --no-pager 2>/dev/null | command grep -q .; then
+  echo ""
+  if confirm "Update dotfiles repo from current machine (chezmoi re-add)?"; then
+    chezmoi re-add
+  fi
+fi
+
+echo ""
+echo "== Repo changes after re-add =="
+if git -C "$DOTFILES_DIR" status --porcelain=v1 | command grep -q .; then
+  git -C "$DOTFILES_DIR" status -sb
+  echo ""
+  echo "== Diff =="
+  if command -v delta >/dev/null 2>&1; then
+    git -C "$DOTFILES_DIR" -c core.pager=delta diff
+  else
+    git -C "$DOTFILES_DIR" diff
+  fi
+
+  echo ""
+  if confirm "Commit and push these changes?"; then
+    read -r -p "Commit message: " msg
+    if [ -z "$msg" ]; then
+      msg="Update dotfiles"
+    fi
+    git -C "$DOTFILES_DIR" add -A
+    git -C "$DOTFILES_DIR" commit -m "$msg"
+    git -C "$DOTFILES_DIR" push
+  fi
+else
+  echo "No repo changes."
+fi

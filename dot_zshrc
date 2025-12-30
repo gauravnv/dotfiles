@@ -9,6 +9,12 @@ export ZSH="$HOME/.oh-my-zsh"
 # Path to nvim
 export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
 
+# Rust toolchain (for cargo-installed tools like `delta`)
+case ":$PATH:" in
+  *":$HOME/.cargo/bin:"*) ;;
+  *) export PATH="$HOME/.cargo/bin:$PATH" ;;
+esac
+
 # Use Powerlevel10k theme
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
@@ -125,6 +131,22 @@ alias ports='ss -tulpn'                   # Show open ports
 alias mem='free -h'                       # Memory usage
 alias cpu='btop --utf-force'              # CPU monitor
 
+# Color output
+export LESS='-R'
+if diff --help 2>/dev/null | command grep -q -- '--color'; then
+  alias diff='diff --color=auto'
+fi
+if ip -h 2>/dev/null | command grep -Eq -- ' -c\b|--color'; then
+  alias ip='ip -c'
+fi
+if command -v tree >/dev/null 2>&1; then
+  alias tree='tree -C'
+fi
+
+# Better git diffs (delta)
+if command -v delta >/dev/null 2>&1; then
+  export GIT_PAGER='delta'
+fi
 
 alias ff='fastfetch'
 
@@ -139,7 +161,7 @@ alias ff='fastfetch'
 unset zle_bracketed_paste
 
 # fnm
-FNM_PATH="/home/ashes/.local/share/fnm"
+FNM_PATH="$HOME/.local/share/fnm"
 if [ -d "$FNM_PATH" ]; then
   export PATH="$FNM_PATH:$PATH"
   eval "`fnm env`"
@@ -169,4 +191,4 @@ esac
 alias shortcuts="$HOME/.local/bin/shortcut-ref"
 
 # opencode
-export PATH=/home/ashes/.opencode/bin:$PATH
+export PATH=$HOME/.opencode/bin:$PATH

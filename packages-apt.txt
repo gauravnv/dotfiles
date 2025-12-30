@@ -12,6 +12,7 @@ zoxide
 # Better defaults
 bat
 eza
+tree
 
 # Dev workflow
 gh

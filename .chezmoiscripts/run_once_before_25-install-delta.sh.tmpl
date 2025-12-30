@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Install git-delta via cargo (Rust).
+#
+# This is intentionally best-effort: if cargo isn't available yet, it is skipped.
+
+if [ "{{ .chezmoi.os }}" != "linux" ]; then
+  exit 0
+fi
+
+if command -v delta >/dev/null 2>&1; then
+  exit 0
+fi
+
+if ! command -v cargo >/dev/null 2>&1; then
+  echo "chezmoi: cargo not found; skipping git-delta install" >&2
+  exit 0
+fi
+
+cargo install git-delta --locked
