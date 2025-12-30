@@ -38,7 +38,8 @@ It:
 - Shows `chezmoi diff` (machine vs repo)
 - Optionally runs `chezmoi re-add` (pull local changes into the repo)
 - Shows repo diffs (uses `delta` if installed)
-- Optionally commits and pushes
+- Optionally commits
+- Optionally pushes directly or opens a PR via `gh`
 
 ## Highlights
 

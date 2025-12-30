@@ -13,6 +13,29 @@ confirm() {
   [[ "$reply" == "y" || "$reply" == "Y" ]]
 }
 
+prompt_choice() {
+  # Usage: prompt_choice "Prompt" "default" "valid_chars" -> echoes choice or empty
+  local prompt="$1"
+  local default_choice="$2"
+  local valid_chars="$3"
+  local reply
+
+  if ! read -r -p "$prompt" reply; then
+    echo ""
+    return 0
+  fi
+
+  if [ -z "$reply" ]; then
+    reply="$default_choice"
+  fi
+
+  if [[ "$reply" =~ ^[$valid_chars]$ ]]; then
+    echo "$reply"
+  else
+    echo ""
+  fi
+}
+
 require() {
   local cmd="$1"
   if ! command -v "$cmd" >/dev/null 2>&1; then
@@ -40,9 +63,13 @@ if [ ! -d "$DOTFILES_DIR/.git" ]; then
   exit 1
 fi
 
+current_branch="$(git -C "$DOTFILES_DIR" rev-parse --abbrev-ref HEAD)"
+
 echo "== Dotfiles repo =="
 echo "$DOTFILES_DIR"
+echo "Branch: $current_branch"
 
+# Fetch remote state.
 echo ""
 echo "== Fetching remote =="
 git -C "$DOTFILES_DIR" fetch --prune || true
@@ -56,34 +83,51 @@ echo ""
 echo "== Repo status =="
 git -C "$DOTFILES_DIR" status -sb
 
-# If behind upstream, offer fast-forward pull.
+# Summarize ahead/behind.
 if [ -n "$upstream" ]; then
-  behind_count=$(git -C "$DOTFILES_DIR" rev-list --count "HEAD..$upstream" 2>/dev/null || echo 0)
-  ahead_count=$(git -C "$DOTFILES_DIR" rev-list --count "$upstream..HEAD" 2>/dev/null || echo 0)
+  read -r ahead behind < <(git -C "$DOTFILES_DIR" rev-list --left-right --count "HEAD...$upstream" 2>/dev/null || echo "0 0")
+  echo "Ahead: $ahead  Behind: $behind"
 
-  if [ "$behind_count" -gt 0 ] && [ "$ahead_count" -eq 0 ]; then
-    if confirm "Remote has $behind_count commit(s). Fast-forward pull?"; then
+  # Allow fast-forward updates.
+  if [ "$behind" -gt 0 ] && [ "$ahead" -eq 0 ]; then
+    if confirm "Remote is ahead by $behind commit(s). Fast-forward pull?"; then
       git -C "$DOTFILES_DIR" pull --ff-only
       if confirm "Apply repo state to this machine (chezmoi apply)?"; then
-        chezmoi apply
+        # In case chezmoi needs a TTY, keep it non-interactive.
+        chezmoi apply --force --no-tty
       fi
     fi
   fi
+
+  # Avoid making automatic decisions if history diverged.
+  if [ "$behind" -gt 0 ] && [ "$ahead" -gt 0 ]; then
+    echo ""
+    echo "update-dotfiles: local branch has diverged from upstream (ahead $ahead, behind $behind)." >&2
+    echo "Resolve manually (rebase/merge), then re-run update-dotfiles." >&2
+    exit 2
+  fi
 fi
 
+# Show machine-vs-repo diff.
 echo ""
 echo "== Local machine vs repo (chezmoi diff) =="
-chezmoi diff || true
-
-if chezmoi diff --no-pager 2>/dev/null | command grep -q .; then
+tmp_diff="$(mktemp)"
+# chezmoi diff returns non-zero when differences exist.
+chezmoi diff --no-pager >"$tmp_diff" 2>/dev/null || true
+if [ -s "$tmp_diff" ]; then
+  cat "$tmp_diff"
   echo ""
   if confirm "Update dotfiles repo from current machine (chezmoi re-add)?"; then
     chezmoi re-add
   fi
+else
+  echo "No differences."
 fi
+rm -f "$tmp_diff"
 
+# Show repo diffs.
 echo ""
-echo "== Repo changes after re-add =="
+echo "== Repo changes =="
 if git -C "$DOTFILES_DIR" status --porcelain=v1 | command grep -q .; then
   git -C "$DOTFILES_DIR" status -sb
   echo ""
@@ -95,14 +139,52 @@ if git -C "$DOTFILES_DIR" status --porcelain=v1 | command grep -q .; then
   fi
 
   echo ""
-  if confirm "Commit and push these changes?"; then
-    read -r -p "Commit message: " msg
+  if confirm "Commit these changes?"; then
+    default_msg="Update dotfiles $(date '+%Y-%m-%d %H:%M')"
+    read -r -p "Commit message (default: $default_msg): " msg
     if [ -z "$msg" ]; then
-      msg="Update dotfiles"
+      msg="$default_msg"
     fi
+
     git -C "$DOTFILES_DIR" add -A
     git -C "$DOTFILES_DIR" commit -m "$msg"
-    git -C "$DOTFILES_DIR" push
+
+    echo ""
+    publish_choice=""
+
+    if command -v gh >/dev/null 2>&1; then
+      publish_choice="$(prompt_choice "Publish: (p)ush to $current_branch, (r)PR via gh, (s)skip? [p/r/s] (default: p): " "p" "prs")"
+    else
+      publish_choice="$(prompt_choice "Publish: (p)ush to $current_branch or (s)skip? [p/s] (default: p): " "p" "ps")"
+    fi
+
+    if [ "$publish_choice" = "p" ]; then
+      git -C "$DOTFILES_DIR" push
+    elif [ "$publish_choice" = "r" ]; then
+      if ! command -v gh >/dev/null 2>&1; then
+        echo "update-dotfiles: gh not found; cannot open PR" >&2
+        exit 1
+      fi
+
+      pr_branch="dotfiles-update-$(date '+%Y%m%d-%H%M%S')"
+
+      echo ""
+      echo "== Creating PR branch =="
+      git -C "$DOTFILES_DIR" checkout -b "$pr_branch"
+      git -C "$DOTFILES_DIR" push -u origin "$pr_branch"
+
+      echo ""
+      echo "== Creating PR =="
+      (
+        cd "$DOTFILES_DIR"
+        gh pr create --base "$current_branch" --head "$pr_branch" --title "$msg" --body "Automated dotfiles update via update-dotfiles." || true
+      )
+
+      echo ""
+      if confirm "Switch back to $current_branch?"; then
+        git -C "$DOTFILES_DIR" checkout "$current_branch"
+      fi
+    fi
   fi
 else
   echo "No repo changes."
