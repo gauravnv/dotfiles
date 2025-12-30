@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Install VS Code extensions listed in the repo.
+if ! command -v code >/dev/null 2>&1; then
+  exit 0
+fi
+
+extensions_file="{{ joinPath .chezmoi.sourceDir "vscode-extensions.txt" }}"
+
+if [ ! -f "$extensions_file" ]; then
+  exit 0
+fi
+
+while IFS= read -r extension; do
+  [ -z "$extension" ] && continue
+  code --install-extension "$extension" >/dev/null
+done < "$extensions_file"

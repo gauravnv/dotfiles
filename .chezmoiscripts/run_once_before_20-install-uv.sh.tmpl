@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Install Astral uv (Python tooling).
+if command -v uv >/dev/null 2>&1; then
+  exit 0
+fi
+
+if ! command -v curl >/dev/null 2>&1; then
+  echo "chezmoi: curl is required to install uv" >&2
+  exit 1
+fi
+
+curl -LsSf https://astral.sh/uv/install.sh | sh

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Install baseline packages on Linux.
+if [ "{{ .chezmoi.os }}" != "linux" ]; then
+  exit 0
+fi
+
+if ! command -v apt-get >/dev/null 2>&1; then
+  exit 0
+fi
+
+packages_file="{{ joinPath .chezmoi.sourceDir "packages-apt.txt" }}"
+
+if [ ! -f "$packages_file" ]; then
+  echo "chezmoi: missing $packages_file" >&2
+  exit 1
+fi
+
+mapfile -t packages < <(awk 'NF && $1 !~ /^#/' "$packages_file")
+
+if [ ${#packages[@]} -eq 0 ]; then
+  exit 0
+fi
+
+sudo apt-get update
+sudo apt-get install -y "${packages[@]}"

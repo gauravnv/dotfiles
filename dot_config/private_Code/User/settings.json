@@ -1,0 +1,21 @@
+{
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "chat.mcp.gallery.enabled": true,
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.colorTheme": "Dracula Theme",
+    "terminal.integrated.fontFamily": "'JetBrainsMono Nerd Font', 'JetBrainsMono NF', monospace",
+    "terminal.integrated.fontSize": 13,
+    "editor.fontFamily": "'JetBrainsMono Nerd Font', 'Droid Sans Mono', monospace",
+    "editor.fontLigatures": true,
+    "files.autoSave": "onFocusChange",
+    "editor.formatOnSave": true,
+    "terminal.integrated.copyOnSelection": true,
+    "git.autofetch": true,
+    "dev.containers.dockerPath": "podman",
+    "dev.containers.dockerComposePath": "podman-compose",
+    "containers.containerClient": "com.microsoft.visualstudio.containers.podman",
+    "containers.orchestratorClient": "com.microsoft.visualstudio.orchestrators.podmancompose",
+    "gitlens.ai.model": "vscode",
+    "gitlens.ai.vscode.model": "copilot:gpt-4.1",
+    "chat.viewSessions.orientation": "stacked"
+}

@@ -1,0 +1,71 @@
+#!/bin/bash
+# Shortcut & Alias Reference Tool
+
+echo ""
+echo "╔══════════════════════════════════════════════════════════════╗"
+echo "║                    KEYBOARD SHORTCUTS                        ║"
+echo "╠══════════════════════════════════════════════════════════════╣"
+echo "║  COSMIC Custom Shortcuts:                                    ║"
+echo "╟──────────────────────────────────────────────────────────────╢"
+
+SHORTCUTS_FILE="$HOME/.config/cosmic/com.system76.CosmicSettings.Shortcuts/v1/custom"
+
+if [[ -f "$SHORTCUTS_FILE" ]]; then
+    # Parse the RON format - descriptions come before keys in blocks
+    awk '
+    BEGIN { RS="\\),"; FS="\n" }
+    {
+        desc = ""; key = ""; mods = ""
+        for (i=1; i<=NF; i++) {
+            if ($i ~ /description: Some/) {
+                gsub(/.*description: Some\("/, "", $i)
+                gsub(/".*/, "", $i)
+                desc = $i
+            }
+            if ($i ~ /key: "/) {
+                gsub(/.*key: "/, "", $i)
+                gsub(/".*/, "", $i)
+                key = $i
+            }
+            if ($i ~ /Super/) mods = mods "Super+"
+            if ($i ~ /Ctrl/) mods = mods "Ctrl+"
+            if ($i ~ /Alt/) mods = mods "Alt+"
+            if ($i ~ /Shift/) mods = mods "Shift+"
+        }
+        if (key != "" && desc != "") {
+            printf "    %-32s → %s\n", mods key, desc
+        }
+    }
+    ' "$SHORTCUTS_FILE" | sort -u
+fi
+
+echo "╟──────────────────────────────────────────────────────────────╢"
+echo "║  Built-in COSMIC Shortcuts:                                  ║"
+echo "╟──────────────────────────────────────────────────────────────╢"
+echo "    Super                      → App Launcher"
+echo "    Super + A                  → Applications"
+echo "    Super + Q                  → Close Window"
+echo "    Super + M                  → Maximize/Restore"
+echo "    Ctrl + Alt + Left/Right    → Switch Workspace"
+echo "    Ctrl + Alt + Shift + ←/→   → Move Window to Workspace"
+echo "    Super + Shift + S          → Screenshot"
+
+echo "╟──────────────────────────────────────────────────────────────╢"
+echo "║  Media Controls:                                             ║"
+echo "╟──────────────────────────────────────────────────────────────╢"
+echo "    XF86AudioPlay              → Play/Pause"
+echo "    XF86AudioNext              → Next Track"
+echo "    XF86AudioPrev              → Previous Track"
+
+echo "╟──────────────────────────────────────────────────────────────╢"
+echo "║  Shell Aliases (from ~/.zshrc):                              ║"
+echo "╟──────────────────────────────────────────────────────────────╢"
+
+if command -v zsh &>/dev/null; then
+    zsh -ic 'alias' 2>/dev/null | head -20 | sed 's/^/    /'
+fi
+
+echo "╚══════════════════════════════════════════════════════════════╝"
+echo ""
+echo "Run 'wev -f wl_keyboard' to detect key names for new shortcuts."
+echo ""

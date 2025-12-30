@@ -1,0 +1,23 @@
+# Core CLI
+curl
+git
+ca-certificates
+
+# Search/navigation
+ripgrep
+fd-find
+fzf
+zoxide
+
+# Better defaults
+bat
+eza
+
+# Dev workflow
+gh
+tmux
+direnv
+pipx
+
+# Terminal
+kitty

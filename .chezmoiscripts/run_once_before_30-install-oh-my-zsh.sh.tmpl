@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Install oh-my-zsh + plugins + powerlevel10k.
+#
+# This script is intentionally safe to re-run.
+
+if ! command -v zsh >/dev/null 2>&1; then
+  exit 0
+fi
+
+if [ -d "$HOME/.oh-my-zsh" ]; then
+  exit 0
+fi
+
+if ! command -v git >/dev/null 2>&1; then
+  echo "chezmoi: git is required to install oh-my-zsh" >&2
+  exit 1
+fi
+
+if ! command -v curl >/dev/null 2>&1; then
+  echo "chezmoi: curl is required to install oh-my-zsh" >&2
+  exit 1
+fi
+
+export RUNZSH=no
+export CHSH=no
+export KEEP_ZSHRC=yes
+
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+zsh_custom="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+
+# Plugins
+if [ ! -d "$zsh_custom/plugins/zsh-autosuggestions" ]; then
+  git clone https://github.com/zsh-users/zsh-autosuggestions "$zsh_custom/plugins/zsh-autosuggestions"
+fi
+
+if [ ! -d "$zsh_custom/plugins/zsh-completions" ]; then
+  git clone https://github.com/zsh-users/zsh-completions "$zsh_custom/plugins/zsh-completions"
+fi
+
+if [ ! -d "$zsh_custom/plugins/zsh-syntax-highlighting" ]; then
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting "$zsh_custom/plugins/zsh-syntax-highlighting"
+fi
+
+# Theme
+if [ ! -d "$zsh_custom/themes/powerlevel10k" ]; then
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$zsh_custom/themes/powerlevel10k"
+fi

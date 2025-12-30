@@ -1,0 +1,158 @@
+{
+    (
+        modifiers: [
+            Super,
+        ],
+        key: "Prior",
+        description: Some("Slash Brightness Up"),
+    ): Spawn("slash-brightness up"),
+    (
+        modifiers: [
+            Ctrl,
+            Alt,
+        ],
+        key: "Right",
+    ): NextWorkspace,
+    (
+        modifiers: [
+            Super,
+            Shift,
+        ],
+        key: "backslash",
+        description: Some("Slash Cycle"),
+    ): Spawn("slash-cycle-mode"),
+    (
+        modifiers: [
+            Super,
+        ],
+        key: "Right",
+    ): Move(Right),
+    (
+        modifiers: [],
+        key: "XF86AudioPrev",
+        description: Some("Previous Track"),
+    ): Spawn("playerctl previous"),
+    (
+        modifiers: [
+            Ctrl,
+            Alt,
+            Shift,
+        ],
+        key: "Left",
+    ): MoveToPreviousWorkspace,
+    (
+        modifiers: [
+            Super,
+        ],
+        key: "bracketright",
+        description: Some("Next Track"),
+    ): Spawn("playerctl next"),
+    (
+        modifiers: [
+            Super,
+        ],
+        key: "Down",
+    ): Move(Down),
+    (
+        modifiers: [
+            Super,
+        ],
+        key: "Up",
+    ): Move(Up),
+    (
+        modifiers: [
+            Super,
+            Shift,
+        ],
+        key: "Left",
+    ): Focus(Left),
+    (
+        modifiers: [
+            Super,
+        ],
+        key: "Left",
+    ): Move(Left),
+    (
+        modifiers: [],
+        key: "XF86AudioNext",
+        description: Some("Next Track"),
+    ): Spawn("playerctl next"),
+    (
+        modifiers: [],
+        key: "XF86Launch1",
+        description: Some("Play/Pause Media"),
+    ): Spawn("playerctl play-pause"),
+    (
+        modifiers: [
+            Ctrl,
+            Alt,
+            Shift,
+        ],
+        key: "Right",
+    ): MoveToNextWorkspace,
+    (
+        modifiers: [],
+        key: "XF86AudioPlay",
+        description: Some("Play/Pause Media"),
+    ): Spawn("playerctl play-pause"),
+    (
+        modifiers: [
+            Super,
+        ],
+        key: "Next",
+    ): Spawn("slash-brightness down"),
+    (
+        modifiers: [
+            Ctrl,
+            Alt,
+        ],
+        key: "Left",
+    ): PreviousWorkspace,
+    (
+        modifiers: [
+            Super,
+            Shift,
+        ],
+        key: "Up",
+    ): Focus(Up),
+    (
+        modifiers: [
+            Super,
+        ],
+        key: "backslash",
+        description: Some("Slash Toggle"),
+    ): Spawn("slash-toggle"),
+    (
+        modifiers: [
+            Super,
+            Shift,
+        ],
+        key: "Down",
+    ): Focus(Down),
+    (
+        modifiers: [
+            Super,
+        ],
+    ): System(Launcher),
+    (
+        modifiers: [
+            Super,
+        ],
+        key: "bracketleft",
+        description: Some("Previous Track"),
+    ): Spawn("playerctl previous"),
+    (
+        modifiers: [
+            Super,
+            Shift,
+        ],
+        key: "s",
+    ): System(Screenshot),
+    (
+        modifiers: [
+            Super,
+            Shift,
+        ],
+        key: "Right",
+    ): Focus(Right),
+}

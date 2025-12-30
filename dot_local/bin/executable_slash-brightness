@@ -1,0 +1,38 @@
+#!/bin/bash
+# Adjust ROG Slash LED brightness
+# Usage: slash-brightness up|down|<0-255>
+
+STATE_FILE="/tmp/slash_brightness"
+STEP=32  # Change by ~12.5% each time
+
+# Get current brightness or default to 128
+if [[ -f "$STATE_FILE" ]]; then
+    BRIGHTNESS=$(cat "$STATE_FILE")
+else
+    BRIGHTNESS=128
+fi
+
+case "$1" in
+    up)
+        BRIGHTNESS=$((BRIGHTNESS + STEP))
+        [[ $BRIGHTNESS -gt 255 ]] && BRIGHTNESS=255
+        ;;
+    down)
+        BRIGHTNESS=$((BRIGHTNESS - STEP))
+        [[ $BRIGHTNESS -lt 0 ]] && BRIGHTNESS=0
+        ;;
+    [0-9]*)
+        BRIGHTNESS=$1
+        ;;
+    *)
+        echo "Usage: slash-brightness up|down|<0-255>"
+        exit 1
+        ;;
+esac
+
+asusctl slash -l "$BRIGHTNESS"
+echo "$BRIGHTNESS" > "$STATE_FILE"
+
+# Calculate percentage
+PERCENT=$((BRIGHTNESS * 100 / 255))
+notify-send "ROG Slash" "Brightness: $PERCENT%" -i preferences-desktop-display

@@ -1,0 +1,22 @@
+#!/bin/bash
+# Cycle through ROG Slash LED modes
+# Modes: Bounce, Slash, Loading, BitStream, Transmission, Flow, Flux, Phantom, Spectrum, Hazard, Interfacing, Ramp, GameOver, Start, Buzzer
+
+MODES=("Bounce" "Slash" "Loading" "BitStream" "Transmission" "Flow" "Flux" "Phantom" "Spectrum" "Hazard" "Interfacing" "Ramp" "GameOver" "Start" "Buzzer")
+STATE_FILE="/tmp/slash_mode_index"
+
+# Get current index or start at 0
+if [[ -f "$STATE_FILE" ]]; then
+    INDEX=$(cat "$STATE_FILE")
+else
+    INDEX=0
+fi
+
+# Move to next mode
+INDEX=$(( (INDEX + 1) % ${#MODES[@]} ))
+MODE="${MODES[$INDEX]}"
+
+# Apply and save
+asusctl slash -m "$MODE"
+echo "$INDEX" > "$STATE_FILE"
+notify-send "ROG Slash" "Mode: $MODE" -i preferences-desktop-display

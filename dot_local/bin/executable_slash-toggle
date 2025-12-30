@@ -1,0 +1,15 @@
+#!/bin/bash
+# Toggle ROG Slash LED on/off
+# Stores state in /tmp/slash_state
+
+STATE_FILE="/tmp/slash_state"
+
+if [[ -f "$STATE_FILE" && $(cat "$STATE_FILE") == "on" ]]; then
+    asusctl slash -d
+    echo "off" > "$STATE_FILE"
+    notify-send "ROG Slash" "LED Off" -i preferences-desktop-display
+else
+    asusctl slash -e
+    echo "on" > "$STATE_FILE"
+    notify-send "ROG Slash" "LED On" -i preferences-desktop-display
+fi

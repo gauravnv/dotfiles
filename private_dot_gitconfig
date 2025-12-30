@@ -1,0 +1,10 @@
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	program = /opt/1Password/op-ssh-sign
+[commit]
+	gpgsign = true
+[user]
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBGLeVcHz7lt6+p2r0dtWOzPCFro9OCK6KkQ+KxHcl9c
+	email = gaurav.nv1@gmail.com
+	name = Gaurav
