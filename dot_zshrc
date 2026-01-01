@@ -192,3 +192,4 @@ alias shortcuts="$HOME/.local/bin/shortcut-ref"
 
 # opencode
 export PATH=$HOME/.opencode/bin:$PATH
+. "/home/ashes/.deno/env"
