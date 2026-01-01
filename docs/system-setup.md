@@ -51,6 +51,84 @@ Notable key behavior:
 - `Ctrl+C` uses Kitty’s `copy_or_interrupt` (copy if selection exists, otherwise SIGINT)
 - `Ctrl+V` pastes from the clipboard
 
+## App Scaling (COSMIC fractional scaling + Electron Flatpaks)
+
+**My setup:** COSMIC (Wayland) with **175% display scaling** and **+10% additional scaling**.
+
+**How I verified I was on Wayland:**
+
+```bash
+echo "$XDG_SESSION_TYPE"
+```
+
+**Problem I hit:** Some Electron apps (notably Discord + Obsidian) launched at a ridiculous scale (everything super-sized). The in-app zoom controls could make it usable, but those settings would reset on restart.
+
+**What I found:** This is a common Linux pain point when Electron apps run via XWayland + fractional scaling. It can look like “double scaling” or inconsistent scaling between apps.
+
+### What I tried
+
+Because Discord and Obsidian are installed as Flatpaks, I tried forcing Electron to prefer Wayland rendering:
+
+```bash
+flatpak override --user --env=ELECTRON_OZONE_PLATFORM_HINT=wayland com.discordapp.Discord
+flatpak override --user --env=ELECTRON_OZONE_PLATFORM_HINT=wayland md.obsidian.Obsidian
+```
+
+### What happened
+
+- Discord: fixed the scaling immediately.
+- Obsidian: stopped launching when I clicked it (it would fail early).
+
+### What I found (root cause)
+
+Obsidian was now trying to start with a Wayland backend, but the Flatpak did not have Wayland socket access enabled (it had `x11` but not `wayland`).
+
+I confirmed permissions with:
+
+```bash
+flatpak info --show-permissions md.obsidian.Obsidian
+flatpak override --user --show md.obsidian.Obsidian
+```
+
+### Fix
+
+I explicitly granted Wayland socket access to the Obsidian Flatpak:
+
+```bash
+flatpak override --user --socket=wayland md.obsidian.Obsidian
+```
+
+After that, Obsidian launched normally again and scaling was sane.
+
+### What I’d try next (if another Electron Flatpak acts weird)
+
+These are the next things I’d personally check/try, in order:
+
+```bash
+# 1) Confirm whether the app is running under Wayland or XWayland
+flatpak run --command=sh md.obsidian.Obsidian -lc 'echo "XDG_SESSION_TYPE=$XDG_SESSION_TYPE"; echo "WAYLAND_DISPLAY=$WAYLAND_DISPLAY"; echo "DISPLAY=$DISPLAY"'
+
+# 2) Confirm the app has the right sockets
+flatpak info --show-permissions <APP_ID>
+
+# 3) Try explicit Wayland flags for Electron/Chromium apps (works for some apps)
+flatpak run <APP_ID> --enable-features=UseOzonePlatform --ozone-platform=wayland
+
+# 4) If the UI is still bizarre, try temporarily disabling GPU acceleration
+flatpak run <APP_ID> --disable-gpu
+```
+
+### Undo (if needed)
+
+If this causes regressions later, I can revert the overrides:
+
+```bash
+flatpak override --user --unset-env=ELECTRON_OZONE_PLATFORM_HINT com.discordapp.Discord
+flatpak override --user --unset-env=ELECTRON_OZONE_PLATFORM_HINT md.obsidian.Obsidian
+
+flatpak override --user --nosocket=wayland md.obsidian.Obsidian
+```
+
 ## Audio Fix (Realtek ALC285)
 
 **Problem:** The hardware mixer (Master/Speaker) behaves incorrectly. Volume adjustments can degrade audio quality instead of changing the volume level.
