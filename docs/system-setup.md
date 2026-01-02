@@ -10,6 +10,9 @@ This document captures system-specific fixes and learnings for this machine. Som
 
 ### asusd
 
+**Source location:** `~/system-essentials/asusctl`  (You can put it wherever you like)
+**Version:** 6.2.0 (as of January 2026)
+
 A systemd unit override was required for `asusd` to start correctly due to the D-Bus bus name.
 
 **File:** `/etc/systemd/system/asusd.service`  
@@ -21,7 +24,60 @@ sudo systemctl daemon-reload
 sudo systemctl restart asusd
 ```
 
+#### Keyboard LED / Aura Support Fix
+
+**Issue Reported: https://gitlab.com/asus-linux/asusctl/-/issues/710**
+
+The GA403WM model was missing from the upstream `aura_support.ron`. Added manually:
+
+**File:** `/usr/share/asusd/aura_support.ron`  
+**Fix script:** `~/system-essentials/scripts/fix_aura_support.py`
+
+This adds a `GA403W` entry with modes: Static, Breathe, Pulse, RainbowCycle, RainbowWave.
+
+**Current status (GA403WM / 0b05:19b6):**
+- Brightness control works via `/sys/class/leds/asus::kbd_backlight/brightness` (0-3)
+- ROG Control Center / `asusctl` accepts mode + color changes and updates config
+- Keyboard backlight does **not** change color on hardware (appears stuck in factory/out-of-box state)
+
+This suggests the device is detected, but the HID RGB protocol used by `asusd` is not effective on this model (may require newer kernel support).
+
+**Note:** After any asusctl update, you may need to reapply this fix until it's merged upstream. Run:
+```bash
+sudo python3 ~/system-essentials/scripts/fix_aura_support.py
+sudo systemctl restart asusd
+```
+
+#### asus-armoury driver (Not Available)
+
+ROG Control Center shows "The asus-armoury driver is not loaded". This driver is:
+- Under development by flukejones
+- Requires kernel patches from [github.com/flukejones/linux](https://github.com/flukejones/linux/tree/wip/ally-6.13)
+- Provides advanced PPT/TDP tuning for newer laptops
+- Not required for many basic features (fan curves, profiles, etc.), but may be required for full LED RGB control on GA403WM
+
+#### Updating asusctl/supergfxctl
+
+Check for updates and rebuild:
+```bash
+~/system-essentials/scripts/update-asusctl.sh
+```
+
+Or manually:
+```bash
+cd ~/system-essentials/asusctl
+git fetch origin main
+git log HEAD..origin/main --oneline  # See new commits
+git pull origin main
+make
+sudo make install
+sudo systemctl daemon-reload && sudo systemctl restart asusd
+```
+
 ### supergfxctl
+
+**Source location:** `~/system-essentials/supergfxctl`  
+**Version:** 5.2.7 (as of January 2026)
 
 GPU switching is handled via `supergfxctl`. GPU mode can be checked with:
 
