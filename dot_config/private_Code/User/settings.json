@@ -17,5 +17,13 @@
     "containers.orchestratorClient": "com.microsoft.visualstudio.orchestrators.podmancompose",
     "gitlens.ai.model": "vscode",
     "gitlens.ai.vscode.model": "copilot:gpt-4.1",
-    "chat.viewSessions.orientation": "stacked"
+    "chat.viewSessions.orientation": "stacked",
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": false,
+        "markdown": true,
+        "scminput": false
+    },
+    "git.blame.editorDecoration.enabled": true,
+    "git.confirmSync": false
 }
