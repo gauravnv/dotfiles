@@ -92,6 +92,8 @@ supergfxctl -m hybrid
 supergfxctl -m dedicated
 ```
 
+**DO NOT USE `ASUSMUXDGPU` MODE** — I accidentally enabled it and had to fight against black screens and boot issues to recover.
+
 ### system76-power
 
 `system76-power` was masked to avoid conflicts with `supergfxctl` GPU management.
