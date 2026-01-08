@@ -219,12 +219,58 @@ alias rmi='/bin/rm -i'                    # Real rm with confirmation
 # fzf integration for powerful fuzzy finding
 {{- if eq .chezmoi.os "linux" }}
 alias fzp='fzf --preview "batcat --color=always --style=numbers --line-range=:500 {}"'
-alias fcd='cd $(fdfind . -type d 2>/dev/null | fzf)'  # Fuzzy cd into directory
-alias fopen='xdg-open "$(fzf)"'           # Fuzzy find and open file
+fcd() {
+  local depth="${1:-6}"
+  local dir
+
+  dir="$(
+    fdfind . -t d --max-depth "$depth" --exclude .git --exclude node_modules 2>/dev/null |
+      fzf --preview 'if command -v eza >/dev/null 2>&1; then eza --tree --level=2 --icons --group-directories-first --color=always "{}"; else ls -la "{}"; fi' \
+          --preview-window=right:50%:wrap
+  )" || return
+
+  [ -n "$dir" ] || return
+  cd "$dir" || return
+}
+
+fopen() {
+  local file
+  file="$(
+    fdfind . -t f --exclude .git --exclude node_modules 2>/dev/null |
+      fzf --preview 'batcat --color=always --style=numbers --line-range=:200 "{}" 2>/dev/null || sed -n "1,200p" "{}"' \
+          --preview-window=right:60%:wrap
+  )" || return
+
+  [ -n "$file" ] || return
+  xdg-open "$file" >/dev/null 2>&1 &
+}
 {{- else if eq .chezmoi.os "darwin" }}
 alias fzp='fzf --preview "bat --color=always --style=numbers --line-range=:500 {}"'
-alias fcd='cd $(fd . -type d 2>/dev/null | fzf)'
-alias fopen='open "$(fzf)"'
+fcd() {
+  local depth="${1:-6}"
+  local dir
+
+  dir="$(
+    fd . -t d --max-depth "$depth" --exclude .git --exclude node_modules 2>/dev/null |
+      fzf --preview 'if command -v eza >/dev/null 2>&1; then eza --tree --level=2 --icons --group-directories-first --color=always "{}"; else ls -la "{}"; fi' \
+          --preview-window=right:50%:wrap
+  )" || return
+
+  [ -n "$dir" ] || return
+  cd "$dir" || return
+}
+
+fopen() {
+  local file
+  file="$(
+    fd . -t f --exclude .git --exclude node_modules 2>/dev/null |
+      fzf --preview 'bat --color=always --style=numbers --line-range=:200 "{}" 2>/dev/null || sed -n "1,200p" "{}"' \
+          --preview-window=right:60%:wrap
+  )" || return
+
+  [ -n "$file" ] || return
+  open "$file"
+}
 {{- end }}
 alias fh='history | fzf --tac'            # Fuzzy history search
 
