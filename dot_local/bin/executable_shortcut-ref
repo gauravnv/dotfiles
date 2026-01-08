@@ -58,14 +58,61 @@ echo "    XF86AudioNext              → Next Track"
 echo "    XF86AudioPrev              → Previous Track"
 
 echo "╟──────────────────────────────────────────────────────────────╢"
-echo "║  Shell Aliases (from ~/.zshrc):                              ║"
+echo "║  Shell Functions & Aliases (from ~/.zshrc):                  ║"
 echo "╟──────────────────────────────────────────────────────────────╢"
 
-if command -v zsh &>/dev/null; then
-    zsh -ic 'alias' 2>/dev/null | head -20 | sed 's/^/    /'
-fi
+# Quick Navigation
+echo "    📁 Navigation & Discovery:"
+echo "       z <dir>          → Jump to frequent directories (zoxide)"
+echo "       fcd              → Fuzzy find & cd into directory (fzf)"
+echo "       fopen            → Fuzzy find & open file in editor (fzf)"
+echo "       fh               → Search shell history (fzf)"
+echo "       mkcd <dir>       → Create directory and cd into it"
+echo ""
 
+# File Operations
+echo "    📄 File Operations:"
+echo "       extract <file>   → Auto-extract any archive format"
+echo "       lt               → Tree view (eza)"
+echo "       lta              → Tree view including hidden files"
+echo "       bat/cat          → View files with syntax highlighting"
+echo "       fd               → Fast alternative to find"
+echo "       rg               → Fast alternative to grep"
+echo ""
+
+# Git Shortcuts
+echo "    📦 Git Shortcuts:"
+echo "       gac <msg>        → git add -A + commit"
+echo "       gacp <msg>       → git add -A + commit + push"
+echo "       gclone <url>     → Clone repo and cd into it"
+echo ""
+
+# System Utilities
+echo "    🖥️  System Utilities:"
+echo "       ff               → Show system info (fastfetch)"
+echo "       shortcuts        → Show this reference"
+echo "       reload           → Reload shell configuration"
+echo "       path             → Show PATH entries (one per line)"
+echo "       myip             → Show public IP address"
+echo "       localip          → Show local IP address"
+echo "       disk             → Interactive disk usage (ncdu)"
+echo "       ports            → Show listening ports"
+echo "       mem              → Show memory usage"
+echo "       top              → System monitor (btop)"
+echo "       psg <term>       → Search running processes"
+echo ""
+
+# Development Tools
+echo "    🛠️  Development:"
+echo "       serve [port]     → Start HTTP server (default 8000)"
+echo "       weather [city]   → Show terminal weather"
+echo "       cheat <topic>    → Quick cheat sheets (cheat.sh)"
+echo "       uvp              → Install package with uv + pipx"
+echo ""
+
+echo "║  For full alias list: Run 'alias' in terminal               ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo ""
-echo "Run 'wev -f wl_keyboard' to detect key names for new shortcuts."
+echo "💡 Tip: Run 'wev -f wl_keyboard' to detect key names for new shortcuts."
+echo "📖 See AGENTS.md for AI assistant preferred tools and patterns."
 echo ""
