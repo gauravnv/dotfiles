@@ -650,20 +650,33 @@ nmcli device show wlp99s0
 
 ## 9. Shell Enhancements
 
-### Ripgrep Integration
+### Modern CLI Tools
 
-**Added to `~/.zshrc`:**
-```bash
-alias grep='rg'
-```
+**Installed via APT:** ripgrep, fd-find, bat, eza, zoxide, fzf, btop, ncdu, tldr, trash-cli
 
-**Purpose:** Use ripgrep (faster, smarter grep) as default search tool  
-**Installed via:** APT (`ripgrep` package)
+**Purpose:** Replace legacy commands with faster, more user-friendly alternatives
+- `rg` → faster grep with smart defaults
+- `fd` → faster find that respects .gitignore  
+- `bat` → cat with syntax highlighting
+- `eza` → modern ls replacement with git integration
+- `zoxide` → smart cd that learns your habits
+- `fzf` → fuzzy finder for everything
+- `btop` → beautiful system monitor
+- `ncdu` → interactive disk usage analyzer
+- `tldr` → simplified man pages with examples
+- `trash-put` → safe delete (trash instead of rm)
 
-**Verify:**
-```bash
-grep --version  # Should show ripgrep version
-```
+**Note:** See [AGENTS.md](../AGENTS.md) for complete tool preferences and usage patterns.
+
+**Shell functions added to `~/.zshrc`:**
+- `fcd` - Fuzzy directory finder with preview
+- `fopen` - Fuzzy file finder and opener
+- `mkcd` - Create directory and cd into it
+- `extract` - Universal archive extractor
+- `gac`/`gacp` - Git shortcuts for commit workflows
+- Plus many more utility functions
+
+Run `shortcuts` command to see full reference of available aliases and functions.
 
 ---
 

@@ -8,10 +8,15 @@ This is my dotfile setup for my Pop!_OS linux machine Zephyrus G14. It started i
 
 - **Shell**: Zsh + Oh My Zsh + Powerlevel10k
 - **Terminal**: Kitty (Dracula theme)
-- **CLI UX**: `eza`, `zoxide`, `fzf`, `ripgrep`, `bat`, `fd`, `gh`, `tmux`, `direnv`, `uv`
+- **CLI Tools**: Modern replacements
+  - `eza` (ls), `zoxide` (cd), `fzf` (fuzzy finder), `ripgrep` (grep), `bat` (cat)
+  - `fd` (find), `btop` (top), `ncdu` (disk usage), `tldr` (man pages)
+  - `gh` (GitHub CLI), `tmux`, `direnv`, `uv` (Python), `delta` (git diff)
 - **Desktop**: COSMIC shortcut definitions
 - **VS Code**: `settings.json` + extension list
-- **System info**: Fastfetch config + a sample image logo
+- **System info**: Fastfetch config + sample image logo
+- **Code Quality**: EditorConfig, pre-commit hooks (Biome, Ruff, shellcheck)
+- **Documentation**: Agent instructions for AI assistants (AGENTS.md)
 
 ## Quick Start
 
@@ -54,11 +59,42 @@ It:
 
 ## Highlights
 
+### Quick Navigation
+- `z <partial-path>` → Jump to frequently visited directory (zoxide)
+- `fcd [depth]` → Fuzzy directory picker with preview (default depth: 6)
+- `fopen` → Fuzzy file picker with preview
+- `fh` → Fuzzy history search
+
+### Modern CLI Tools
+- `rg` → ripgrep (smart-case search)
+- `fd` → fd-find (faster than find)
+- `bat` → batcat (syntax-highlighted cat)
+- `eza` (via `ll`, `lt`, `lta`) → Better ls with icons and git status
+
+### Shell Functions
+- `mkcd <dir>` → Make directory and cd into it
+- `extract <file>` → Extract any archive type
+- `gac <msg>` → Git add all + commit
+- `gacp <msg>` → Git add all + commit + push
+- `gclone <url>` → Clone repo and cd into it
+- `psg <name>` → Search processes by name
+- `serve [port]` → Quick HTTP server (default: 8000)
+- `weather [city]` → Terminal weather forecast
+- `cheat <command>` → Quick cheat sheet from cheat.sh
+
+### System Utilities
 - `ff` → `fastfetch`
-- `shortcuts` → shortcut reference output
-- `fzp` → `fzf` with `bat` preview
+- `shortcuts` → Shortcut reference output
+- `reload` → Restart shell
+- `path` → Show PATH entries one per line
+- `myip` → Show public IP
+- `disk` → Interactive disk usage (ncdu)
+- `top` → Better system monitor (btop)
+
+### Development
 - `tn` / `ta` / `tl` → tmux new/attach/list
-- `uvr` / `uvs` / `uva` → `uv run` / `uv sync` / `uv add`
+- `uvr` / `uvs` / `uva` / `uvp` → `uv run` / `uv sync` / `uv add` / `uv pip`
+- Pre-commit hooks configured (Biome, Ruff, shellcheck)
 
 ## Fastfetch Logo Image
 
