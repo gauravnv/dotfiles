@@ -275,9 +275,14 @@ fopen() {
 alias fh='history | fzf --tac'            # Fuzzy history search
 
 # Quick system tools
-alias disk='ncdu /'                       # Analyze full disk
+alias disk='ncdu'                         # Interactive disk usage
+{{- if eq .chezmoi.os "linux" }}
 alias ports='ss -tulpn'                   # Show open ports
 alias mem='free -h'                       # Memory usage
+{{- else if eq .chezmoi.os "darwin" }}
+alias ports='lsof -iTCP -sTCP:LISTEN -n -P'  # Show open ports
+alias mem='top -l 1 -s 0 | head -n 10'   # Memory usage
+{{- end }}
 alias cpu='btop --utf-force'              # CPU monitor
 
 # Color output
@@ -344,5 +349,11 @@ esac
 alias shortcuts="$HOME/.local/bin/shortcut-ref"
 
 # opencode
-export PATH=$HOME/.opencode/bin:$PATH
-. "/home/ashes/.deno/env"
+if [ -d "$HOME/.opencode/bin" ]; then
+  export PATH="$HOME/.opencode/bin:$PATH"
+fi
+
+# deno
+if [ -f "$HOME/.deno/env" ]; then
+  . "$HOME/.deno/env"
+fi
