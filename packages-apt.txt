@@ -2,6 +2,8 @@
 curl
 git
 ca-certificates
+wget
+unzip
 
 # Search/navigation
 ripgrep
@@ -13,12 +15,21 @@ zoxide
 bat
 eza
 tree
+jq                  # JSON processor
 
 # Dev workflow
 gh
 tmux
 direnv
 pipx
+make
+build-essential
+
+# Disk/system utilities
+ncdu
+btop
+trash-cli           # For safe rm alias
+tldr                # Simplified man pages
 
 # Terminal
 kitty

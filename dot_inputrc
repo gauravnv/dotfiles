@@ -1,0 +1,33 @@
+# ~/.inputrc - readline configuration for bash/zsh line editing
+
+# Case-insensitive tab completion
+set completion-ignore-case on
+
+# Show all completions on first tab
+set show-all-if-ambiguous on
+
+# Append / to directories, * to executables, etc.
+set visible-stats on
+
+# Color completions by file type
+set colored-stats on
+
+# Don't ring bell on completion
+set bell-style none
+
+# Append character to symlinks to indicate type
+set mark-symlinked-directories on
+
+# Match hidden files without explicit dot
+set match-hidden-files on
+
+# Show common prefix in color
+set colored-completion-prefix on
+
+# Use up/down arrows to search history with typed prefix
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+
+# Ctrl+Left/Right for word movement
+"\e[1;5C": forward-word
+"\e[1;5D": backward-word

@@ -1,0 +1,19 @@
+# Repo-only files (not managed targets)
+README.md
+AGENTS.md
+docs/
+packages-apt.txt
+vscode-extensions.txt
+Brewfile
+
+# OS-specific ignores (for future cross-platform support)
+{{- if ne .chezmoi.os "linux" }}
+# Linux-only files to ignore on other OSes
+dot_config/cosmic/
+dot_local/bin/executable_slash-*
+{{- end }}
+
+{{- if ne .chezmoi.os "darwin" }}
+# macOS-only files (when you add them)
+# dot_config/karabiner/
+{{- end }}
