@@ -1,7 +1,7 @@
 {
     "github.copilot.nextEditSuggestions.enabled": true,
     "chat.mcp.gallery.enabled": true,
-    "workbench.iconTheme": "material-icon-theme",
+    "workbench.iconTheme": "catppuccin-macchiato",
     "workbench.colorTheme": "Dracula Theme",
     "terminal.integrated.fontFamily": "'JetBrainsMono Nerd Font', 'JetBrainsMono NF', monospace",
     "terminal.integrated.fontSize": 13,

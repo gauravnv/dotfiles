@@ -1,0 +1,9 @@
+# Keychron keyboards - allow user access for VIA and Keychron Launcher
+# Keychron Q1 Max (Vendor: 3434, Product: 0810)
+KERNEL=="hidraw*", ATTRS{idVendor}=="3434", ATTRS{idProduct}=="0810", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+
+# Generic rule for all Keychron keyboards (Vendor ID: 3434)
+KERNEL=="hidraw*", ATTRS{idVendor}=="3434", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+
+# For USB device node permissions
+SUBSYSTEM=="usb", ATTRS{idVendor}=="3434", MODE="0660", GROUP="plugdev", TAG+="uaccess"

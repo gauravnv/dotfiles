@@ -1,0 +1,21 @@
+#!/bin/bash
+# Install udev rules for Keychron keyboards (VIA/Keychron Launcher support)
+
+set -euo pipefail
+
+RULES_FILE="/etc/udev/rules.d/50-keychron.rules"
+
+# Only run on Linux
+{{ if ne .chezmoi.os "linux" }}
+exit 0
+{{ end }}
+
+if [[ ! -f "$RULES_FILE" ]]; then
+    echo "Installing Keychron udev rules..."
+    sudo cp "{{ .chezmoi.sourceDir }}/etc/udev/rules.d/50-keychron.rules" "$RULES_FILE"
+    sudo udevadm control --reload-rules
+    sudo udevadm trigger
+    echo "✅ Keychron udev rules installed. You may need to replug your keyboard."
+else
+    echo "Keychron udev rules already installed."
+fi
