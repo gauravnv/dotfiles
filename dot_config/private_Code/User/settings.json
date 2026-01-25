@@ -25,5 +25,8 @@
         "scminput": false
     },
     "git.blame.editorDecoration.enabled": true,
-    "git.confirmSync": false
+    "git.confirmSync": false,
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    }
 }
